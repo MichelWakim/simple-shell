@@ -5,14 +5,15 @@
 #include <unistd.h>
 // include stdlib.h to privide compatible implicit declaration of built-in function ‘exit’
 #include <stdlib.h>
-#include <sys/types.h>
+// to use the max defined by the language 
 #include <limits.h>
+// for waitpid() and associated macros
 #include <sys/wait.h>
 
 //Fuction to run the shell
 void runTheShell ();
 // Function to get the current directory
-void getDirectory ();
+int getDirectory ();
 // Fuction to count the number of words in the command
 int numOfWords (char command []);
 // Function to split the command array into an array of strings
@@ -35,15 +36,13 @@ void runTheShell () {
       // display a prompt 
 		printf("Micho.Shell ");    
 		// calling teh getDirectory function
-		
+		getDirectory ();
 		// create a string for command
 		char command[100] = {0} ; 	
 		// reading the command line	
 		scanf("%[^\n]%*c", command);  
 		/* strcmp is used to compare 2 strings in c language
 		 if strcmp returns ZERO in case of MATCHING */
-		
-		if ( strlen(command) > 0) {
 		if (! strcmp(command, "exit")) {
 		   // exit the shell if the command = exit
 		   exit(0);
@@ -68,25 +67,25 @@ void runTheShell () {
 		free(arguments);  
 	}
 }
-}
 
 
-void getDirectory () {
+
+int getDirectory () {
    // creating an array of characters to store path
 	char original_path[PATH_MAX];
 	// getting the current path
 	// after getting the path if the array cwd is not empty  
    if (getcwd(original_path, sizeof(original_path)) != NULL) {
       // print the path
-      //printf(/*"Current working dir:*/ "-> %s $ ", original_path);
+      printf(/*"Current working dir:*/ "-> %s $ ", original_path);
       // if the array is empty after getting the path 
    } else {
       // print an error
       perror("getcwd() error");
       // return 1 for error
-      //return 1;
+      return 1;
    }
-   //return original_path;
+   return 0;
 }
 
 int numOfWords (char command []){
