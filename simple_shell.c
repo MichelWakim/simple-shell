@@ -19,6 +19,8 @@ int numOfWords (char command []);
 char **splittingTheCommand (char *command, int num);
 // Function to excute the command line
 void excutingTheCommand (char ** arguments);
+// Function to cahnge directory
+void changingDirectory (char* command);
 
 int main(){
    // printing a welcome message 
@@ -35,25 +37,34 @@ void runTheShell () {
 		// calling teh getDirectory function
 		getDirectory ();
 		// create a string for command
-		char command[100]; 	
+		char command[100] = {0} ; 	
 		// reading the command line	
 		scanf("%[^\n]%*c", command);  
 		/* strcmp is used to compare 2 strings in c language
 		 if strcmp returns ZERO in case of MATCHING */
+		//printf("blo%sbla\n\n",command);
+		//printf("%ld",strlen(command));
+		//break;
 		if (! strcmp(command, "exit")) {
 		   // exit the shell if the command = exit
 		   break;
-		   }
+		} else if (command[0] == 'c' & command[1] == 'd') {
+		   changingDirectory (command);
+		   continue;
+		}
+		 
 	   // Declaration of integer num that stores the number of words in the command array 
 	   int  num = numOfWords(command);
 	   // creating an array of pointers that each element in the command array is a string 
 	   char **arguments;
 	   // calling the function to split the command into an array of strings
 	   arguments = splittingTheCommand(command, num);
+	   
+	   //for (int i = 0; i< num; i++) printf("argumunts[%d] = %s\n",i,arguments[i]);
 		// calliing the excuting function
 	   excutingTheCommand (arguments);
 	   // get memory free 
-		free(arguments); 
+		free(arguments);  
 	}
 }
 
@@ -95,7 +106,7 @@ int numOfWords (char command []){
 char **splittingTheCommand (char *command, int num) {
    // creating an array of pointers that each element in the command array is a string 
 	char **arguments = (char **)malloc(num* sizeof(char*)); 
-	int i = 0;
+	int i = 1;
 	//storing the first word as an element in the string
 	arguments[0] = strtok(command, " ");
 		
@@ -103,6 +114,7 @@ char **splittingTheCommand (char *command, int num) {
 	while (arguments[i] != NULL) {
 	      //storing each word as an element in the string
 			arguments[++i] = strtok(NULL," ");
+			printf("%s\n",arguments[i-1]);
    }
    return arguments;
 }
@@ -110,30 +122,32 @@ char **splittingTheCommand (char *command, int num) {
 
 void excutingTheCommand (char ** arguments) {
    pid_t child, parent;
-		//duplicate
-		child=fork();
-		//statu of the child;
-		int status; 
+	//duplicate
+	child=fork();
+	//statu of the child;
+	int status; 
 	
-		if(child == 0){
-		   
-		   //if (! strcmp(arguments[0], "cd")) chdir(arguments[1]);
-		   
-		   // execvp has its parameters as array of strings
-			execvp(arguments[0], arguments); 
-			// only get here on error
-			perror("error"); 
-			exit(1);
-		}else if (child > 0){
-		   parent = wait(&status);
-		}else{
-		   //error: The return of fork() is negative
-	    	perror("fork failed");
-	    	//exit failure, hard
-	    	_exit(2);
-	   }
+	if(child == 0){
+		// execvp has its parameters as array of strings
+		execvp(arguments[0], arguments); 
+		// only get here on error
+		perror("error"); 
+		exit(1);
+	}else if (child > 0){
+		 parent = wait(&status);
+	}else{
+		 //error: The return of fork() is negative
+	    perror("fork failed");
+	    //exit failure, hard
+	    _exit(2);
+	}
 }
 
+void changingDirectory (char* command) {
+   char* path =  &command[3] ;
+   chdir(path);
+   
+}
 /*(https://www.codingame.com/playgrounds/14213/how-to-play-with-strings-in-c/string-split) for splittig a string
 (https://www.usna.edu/Users/cs/aviv/classes/ic221/s16/lec/14/lec.html) the system functions */
 
