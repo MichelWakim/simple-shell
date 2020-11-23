@@ -1,17 +1,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+// include stdlib.h to privide compatible implicit declaration of built-in function ‘exit’
 #include <stdlib.h>
 #include <sys/types.h>
+#include <limits.h>
 #include <sys/wait.h>
 
+// Function to get the current directory
+int getDirectory ();
 
-void main(){
+int main(){
 
    printf("******************    Welcome to my simple shell    ******************\n");
 	while(1){
       //display a prompt 
-		printf("Micho.Shell -> ");      
+		printf("Micho.Shell ");    
+		
+		getDirectory ();
+		
+		  
 		char str[100]; 		//create a string for command
 		scanf("%[^\n]%*c", str); //read the command line           
 	
@@ -40,7 +48,29 @@ void main(){
 
 		
 	}
+	return 0;
 }
+
+int getDirectory () {
+
+   // creating an array of characters to store path
+	char cwd[PATH_MAX];
+	// getting the current path
+	// after getting the path if the array cwd is not empty  
+   if (getcwd(cwd, sizeof(cwd)) != NULL) {
+       // print the path
+       printf(/*"Current working dir:*/ "-> %s $ ", cwd);
+      // if the array is empty after getting the path 
+   } else {
+      // print an error
+      perror("getcwd() error");
+      // return 1 for error
+      return 1;
+   }
+   return 0;
+}
+
+
 /*(https://www.codingame.com/playgrounds/14213/how-to-play-with-strings-in-c/string-split) for splittig a string
 (https://www.usna.edu/Users/cs/aviv/classes/ic221/s16/lec/14/lec.html) the system functions */
 
